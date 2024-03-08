@@ -1,0 +1,53 @@
+# This file is used to build the docker image for the web server and the database
+version: '3'
+# The file defines two services: db and web
+services:
+    db:
+        # The db service uses the mysql:8.0.29 image, which is a Docker image that contains MySQL version 8.0.29.
+        image: mysql:8.0.29
+
+        # The restart: always directive ensures that the container restarts automatically if it stops.
+        # If it's stopped manually, it is restarted only when Docker daemon restarts or the container itself is manually restarted.
+        restart: always
+
+        # The ports directive maps the MySQL port 3306 inside the Docker container to port 3306 on the host machine.
+        # This allows us to connect to the MySQL server running inside the Docker container from the host machine.
+        ports:
+            - 3306:3306
+        # The command directive is used to start the MySQL server with the mysql_native_password authentication plugin.
+        # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
+        # (this is just an example, not intended to be a production configuration)
+        command: --default-authentication-plugin=mysql_native_password
+
+        # The environment directive sets environment variables inside the Docker container.
+        environment:
+            MYSQL_ROOT_PASSWORD: my-secret-pw # Update for your project
+            MYSQL_DATABASE: db_name # Database name
+
+        # The volumes directive mounts files or directories from the host machine to the Docker container.
+        # Here, it's mounting a SQL dump file from the host machine to the /docker-entrypoint-initdb.d/ directory inside the Docker container.
+        # Any .sql files in this directory are automatically executed when the container starts up.
+        volumes:
+            - ./<filename>.sql:/docker-entrypoint-initdb.d/00-<db_name>.sql
+
+    # web:
+    #     # The web service builds a Docker image using the Dockerfile in the current directory (as specified by the build: . directive).
+    #     build: .
+
+    #     # Like the db service, it also restarts automatically if it stops.
+    #     restart: always
+
+    #     # The ports directive for the web service maps port 80 inside the Docker container to port 80 on the host machine.
+    #     # This allows you to access the web server running inside the Docker container from your host machine.
+    #     ports:
+    #         - 80:80
+
+    #     # The volumes directive for the web service mounts the current directory on the host machine to the /var/www/html/ directory inside the Docker container.
+    #     # This allows the web server to serve our PHP application.
+    #     volumes:
+    #         - ./:/var/www/html/
+
+    #     # The depends_on directive specifies that the web service depends on the db service.
+    #     # This means that the db service will start before the web service.
+    #     depends_on:
+    #         - db
