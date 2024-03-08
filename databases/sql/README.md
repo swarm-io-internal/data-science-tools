@@ -4,4 +4,4 @@
 ## Requirements
 - [ ] docker-compose.yml
 - [ ] [dbeaver](https://dbeaver.com/download/)
-- [ ] MySQL database
+- [ ] SQL database
