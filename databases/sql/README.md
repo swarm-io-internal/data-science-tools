@@ -1,4 +1,4 @@
-# SQL Database tools
+# SQL Database Tools
 
 # Loading a Database
 ## Requirements
